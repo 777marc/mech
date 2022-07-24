@@ -11,16 +11,17 @@ engine.addRule({
     all: [question],
   },
   onSuccess() {
-    currentQuestion = 2;
+    question = questions[question.yes];
     askQuestion();
   },
   onFailure() {
+    question = questions[question.no];
     askQuestion();
   },
   event: {
     type: "message",
     params: {
-      data: "hello-world!",
+      data: question,
     },
   },
 });
@@ -30,7 +31,7 @@ const askQuestion = () => {
     .prompt([
       {
         type: "input",
-        name: "qOne",
+        name: "name",
         message: question.question,
         validate: (answer) => {
           let res = runRules(answer);
@@ -49,8 +50,9 @@ const runRules = (answer) => {
   engine
     .run({ [question.fact]: answer })
     .then((results) => {
-      console.log("after...", results.events);
-      //results.events.map((event) => console.log("value :", event.params.data));
+      results.events.map((event) =>
+        console.log("next :", event.params.data[answer])
+      );
     })
     .catch((err) => console.log("err ", err));
 };
